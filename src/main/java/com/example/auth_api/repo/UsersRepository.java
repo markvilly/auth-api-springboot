@@ -6,5 +6,5 @@ import java.util.Optional;
 import com.example.auth_api.entity.User;
 
 public interface UsersRepository extends JpaRepository<User, Long>{
-    Optional<User> findByUsername(String username);
+    Optional<User>findByUsername(String username);
 }
