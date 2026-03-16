@@ -17,7 +17,6 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-	// 1. inject JwtUtil and CustomUserDetailsService
 	private final JwtUtil jwtUtil;
 
 	private final CustomUserDetailsService customUserDetailsService;
@@ -32,11 +31,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 
 		String authHeader = request.getHeader("Authorization");
-	
+
 		if (authHeader != null && authHeader.startsWith("Bearer ")) {
 			String token = authHeader.substring(7);
 
 			if (jwtUtil.validateToken(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
+
 				String username = jwtUtil.extractUsername(token);
 				UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
 
@@ -47,9 +47,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 			}
 		}
-
 		filterChain.doFilter(request, response);
-
 	}
 
 }
