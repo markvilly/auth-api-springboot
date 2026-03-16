@@ -3,10 +3,12 @@ package com.example.auth_api.service;
 import java.util.Set;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.auth_api.dto.AuthResponse;
+import com.example.auth_api.dto.LoginRequest;
 import com.example.auth_api.dto.RegisterRequest;
 import com.example.auth_api.entity.Role;
 import com.example.auth_api.entity.User;
@@ -51,7 +53,11 @@ public class AuthService {
 
     }
 
-    // public AuthResponse login(LoginRequest request){
+   public AuthResponse login(LoginRequest request){
 
-    // }
+    authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+    );
+    return new AuthResponse(jwtUtil.generateToken(request.getUsername()));
+   }
 }
