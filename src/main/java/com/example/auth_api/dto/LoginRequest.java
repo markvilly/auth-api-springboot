@@ -1,21 +1,22 @@
 package com.example.auth_api.dto;
 
 public class LoginRequest {
-    private String username;
-    private String password;
 
-    public LoginRequest(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
+	private String username;
 
-    public String getUsername() {
-        return username;
-    }
+	private String password;
 
-    public String getPassword() {
-        return password;
-    }
+	public LoginRequest(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
 
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
 
 }

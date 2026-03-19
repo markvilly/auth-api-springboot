@@ -18,46 +18,50 @@ import com.example.auth_api.security.JwtUtil;
 
 @Service
 public class AuthService {
-    private final UsersRepository usersRepository;
-    private final RolesRepository rolesRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
-    
 
+	private final UsersRepository usersRepository;
 
-    public AuthService(AuthenticationManager authenticationManager, BCryptPasswordEncoder bCryptPasswordEncoder, JwtUtil jwtUtil, RolesRepository rolesRepository, UsersRepository usersRepository) {
-        this.authenticationManager = authenticationManager;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.jwtUtil = jwtUtil;
-        this.rolesRepository = rolesRepository;
-        this.usersRepository = usersRepository;
-    }
+	private final RolesRepository rolesRepository;
 
-    public AuthResponse register(RegisterRequest request)throws RuntimeException{
-        if(usersRepository.findByUsername(request.getUsername()).isPresent()){
-                    throw new RuntimeException("Username already exists");
-        }
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
+	private final AuthenticationManager authenticationManager;
 
-        Role role = rolesRepository.findByName("ROLE_USER")
-            .orElseThrow(()-> new RuntimeException("Default role not found"));
+	private final JwtUtil jwtUtil;
 
-        user.setRoles(Set.of(role));
+	public AuthService(AuthenticationManager authenticationManager, BCryptPasswordEncoder bCryptPasswordEncoder,
+			JwtUtil jwtUtil, RolesRepository rolesRepository, UsersRepository usersRepository) {
+		this.authenticationManager = authenticationManager;
+		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+		this.jwtUtil = jwtUtil;
+		this.rolesRepository = rolesRepository;
+		this.usersRepository = usersRepository;
+	}
 
-        usersRepository.save(user);
-        return new AuthResponse(jwtUtil.generateToken(user.getUsername()));
+	public AuthResponse register(RegisterRequest request) throws RuntimeException {
+		if (usersRepository.findByUsername(request.getUsername()).isPresent()) {
+			throw new RuntimeException("Username already exists");
+		}
 
-    }
+		User user = new User();
+		user.setUsername(request.getUsername());
+		user.setPassword(bCryptPasswordEncoder.encode(request.getPassword()));
 
-   public AuthResponse login(LoginRequest request){
+		Role role = rolesRepository.findByName("ROLE_USER")
+			.orElseThrow(() -> new RuntimeException("Default role not found"));
 
-    authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-    );
-    return new AuthResponse(jwtUtil.generateToken(request.getUsername()));
-   }
+		user.setRoles(Set.of(role));
+
+		usersRepository.save(user);
+		return new AuthResponse(jwtUtil.generateToken(user.getUsername()));
+
+	}
+
+	public AuthResponse login(LoginRequest request) {
+
+		authenticationManager
+			.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+		return new AuthResponse(jwtUtil.generateToken(request.getUsername()));
+	}
+
 }
